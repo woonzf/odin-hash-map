@@ -1,6 +1,6 @@
 import LinkedList from "./linked-list.js";
 
-export default class HashMap {
+export default class HashSet {
     constructor() {
         this.capacity = 16;
         this.table = new Array(this.capacity).fill(null);
@@ -24,15 +24,13 @@ export default class HashMap {
         return hashCode;
     }
 
-    set(key, value) {
-        if (value === undefined) throw new Error("Missing value");
-
+    add(key) {
         const hashCode = this.hash(key);
 
         // Insert if bucket is empty
         if (this.table[hashCode] === null) {
             this.table[hashCode] = new LinkedList();
-            this.table[hashCode].append({key, value});
+            this.table[hashCode].append(key);
             this.load += 1;
 
             // Grow table if exceeds load factor
@@ -43,25 +41,8 @@ export default class HashMap {
             return;
         }
 
-        // Replace value if key exists
-        const bucket = this.table[hashCode];
-        const node = bucket.get(key);
-        if (node !== null) node.replace(value);
-
         // Append linked list if collision
-        else {
-            bucket.append({key, value});
-        }
-    }
-
-    get(key) {
-        const hashCode = this.hash(key);
-        const bucket = this.table[hashCode];
-        if (bucket === null) return null;
-
-        const node = bucket.get(key);
-        if (node === null) return null;
-        if (node.item.key === key) return node.item.value;
+        this.table[hashCode].append(key);
     }
 
     has(key) {
@@ -94,25 +75,13 @@ export default class HashMap {
     }
 
     keys() {
-        return this.getInfo("keys");
-    }
-
-    values() {
-        return this.getInfo("values");
-    }
-
-    entries() {
-        return this.getInfo("entries");
-    }
-
-    getInfo(att) {
         let arr = [];
         if (this.load === 0) return arr;
 
         let bucket = null;
         for (let i = 0; i < this.capacity; i++) {
             bucket = this.table[i];
-            if (bucket !== null) arr.push(... bucket.keyValue(att));
+            if (bucket !== null) arr.push(... bucket.keyValue("set"));
         }
 
         return arr;
@@ -128,8 +97,8 @@ export default class HashMap {
 
         for (let i = 0; i < oldCapacity; i++) {
             if (oldHashMap[i] !== null) {
-                const entries = oldHashMap[i].keyValue("entries");
-                for (const entry of entries) this.set(entry[0], entry[1]);
+                const entries = oldHashMap[i].keyValue("set");
+                for (const entry of entries) this.add(entry);
             }
         }
     }

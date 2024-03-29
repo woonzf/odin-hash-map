@@ -20,7 +20,7 @@ export default class LinkedList {
         let current = this.listHead;
 
         while (current !== null) {
-            if (current.item.key === key) return current;
+            if (current.item === key || current.item.key === key) return current;
             current = current.nextNode;
         }
 
@@ -28,7 +28,7 @@ export default class LinkedList {
     }
 
     // Check if key exists
-    has(key) {
+    contains(key) {
         if (this.get(key) !== null) return true;
         return false;
     }
@@ -39,7 +39,7 @@ export default class LinkedList {
         let prev = null;
 
         while (current !== null) {
-            if (current.item.key === key) {
+            if (current.item === key || current.item.key === key) {
                 if (prev === null) this.listHead = this.listHead.nextNode;
                 else prev.nextNode = current.nextNode;
                 return true;
@@ -59,7 +59,8 @@ export default class LinkedList {
 
         while (current !== null) {
             const item = current.item;
-            if (att === "keys") arr.push(item.key);
+            if (att === "set") arr.push(item);
+            else if (att === "keys") arr.push(item.key);
             else if (att === "values") arr.push(item.value);
             else if (att === "entries") arr.push([item.key, item.value]);
             current = current.nextNode;
